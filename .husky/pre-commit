@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+cd api && npm run type-check && npx lint-staged
+# cd ../frontend && npm run test:run && npm run type-check && npx lint-staged
+

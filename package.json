@@ -1,0 +1,12 @@
+{
+  "name": "template-root",
+  "private": true,
+  "scripts": {
+     "prepare": "husky"
+  },
+  "author": "Jozsef Vass",
+  "license": "MTI",
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}
