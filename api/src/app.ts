@@ -1,1 +1,2 @@
-console.log('hello');
+import './models/database';
+console.log('running');

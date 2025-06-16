@@ -6,7 +6,14 @@ import vitest from '@vitest/eslint-plugin';
 
 export default tseslint.config(
 	{
-		ignores: ['**/*.js'],
+		ignores: [
+			'**/node_modules/**',
+			'**/dist/**',
+			'**/build/**',
+			'**/database/**',
+			'**/src/models/drizzle/**',
+			'**/*.js',
+		],
 	},
 	eslint.configs.recommended,
 	tseslint.configs.strictTypeChecked,
@@ -29,6 +36,13 @@ export default tseslint.config(
 		rules: {
 			...vitest.configs.recommended.rules,
 			'@typescript-eslint/unbound-method': 'off',
+		},
+	},
+	{
+		rules: {
+			'@typescript-eslint/no-namespace': 'off',
+			'@typescript-eslint/no-empty-object-type': 'off',
+			'@typescript-eslint/no-floating-promises': 'off',
 		},
 	},
 );

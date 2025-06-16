@@ -2,7 +2,10 @@
   "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./"
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "rootDir": "./",
+    "target": "ES2022"
   },
   "include": ["**/*.ts"],
   "exclude": ["dist"]

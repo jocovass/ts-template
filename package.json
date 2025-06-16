@@ -2,7 +2,7 @@
   "name": "template-root",
   "private": true,
   "scripts": {
-     "prepare": "husky"
+    "prepare": "husky"
   },
   "author": "Jozsef Vass",
   "license": "MTI",
