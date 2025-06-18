@@ -10,7 +10,7 @@ export const todoStatuses = todoSchema.enum('todo_status', [
 	'deleted',
 ]);
 
-export const users = todoSchema.table('todos', {
+export const todos = todoSchema.table('todos', {
 	createdAt: timestamp('created_at', { withTimezone: true })
 		.notNull()
 		.defaultNow(),

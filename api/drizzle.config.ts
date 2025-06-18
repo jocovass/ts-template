@@ -1,6 +1,6 @@
 import { type Config } from 'drizzle-kit';
 
-import { init } from './src/utils/validations/initEnv';
+import { init } from './src/utils/initEnv';
 
 init();
 
