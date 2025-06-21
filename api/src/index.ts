@@ -1,14 +1,20 @@
-import { count, eq } from 'drizzle-orm';
+import cors from 'cors';
+import { count, desc, eq, ne } from 'drizzle-orm';
 import express from 'express';
 import { z } from 'zod';
 
 import { db } from './models/database';
 import { todos } from './models/schemas';
 import { type ErrorResponse } from './utils/api/types';
+import { init } from './utils/initEnv';
+
+init();
 
 const app = express();
 
 app.disable('x-powered-by');
+
+app.use(cors());
 
 app.use(
 	express.json({
@@ -17,7 +23,7 @@ app.use(
 );
 
 const CreatTodoSchema = z.object({
-	description: z.string().nullable(),
+	description: z.string().optional(),
 	name: z.string(),
 });
 
@@ -44,7 +50,7 @@ function formatApiError(error: z.ZodError) {
 		let path: string;
 		let message = value.message;
 		if (Array.isArray(value.path)) {
-			path = value.path[0].toString();
+			path = value.path[0]?.toString();
 			if (value.path.length >= 2) {
 				message = `${message} (at index value.path[i])`;
 			}
@@ -53,7 +59,6 @@ function formatApiError(error: z.ZodError) {
 		}
 		errorMap[path] ??= [];
 		errorMap[path].push(message);
-		fieldErrors.push({ error: [message], field: path });
 	});
 
 	Object.entries(errorMap).forEach(([key, value]) => {
@@ -100,8 +105,13 @@ app.get('/todos', async (req, res) => {
 	const data = await db.query.todos.findMany({
 		limit: res.locals.page.limit,
 		offset: res.locals.page.offset,
+		orderBy: [desc(todos.createdAt)],
+		where: ne(todos.status, 'deleted'),
 	});
-	const total = await db.select({ count: count() }).from(todos);
+	const total = await db
+		.select({ count: count() })
+		.from(todos)
+		.where(ne(todos.status, 'deleted'));
 	res.status(200).json({
 		data,
 		meta: getPaginationMeta({
@@ -109,7 +119,7 @@ app.get('/todos', async (req, res) => {
 			limit: res.locals.page.limit,
 			total: total[0].count,
 		}),
-		status: 'succes',
+		status: 'success',
 	});
 });
 
@@ -132,7 +142,7 @@ app.post('/todos', async (req, res) => {
 	});
 });
 
-app.patch('/todos:id', async (req, res) => {
+app.patch('/todos/:id', async (req, res) => {
 	const result = UpdateTodoSchema.safeParse(req.body);
 	if (!result.success) {
 		res.status(400).json({
@@ -152,12 +162,21 @@ app.patch('/todos:id', async (req, res) => {
 		.returning();
 
 	res.status(200).json({
-		data: todo,
+		data: todo[0],
 		status: 'success',
 	});
 });
 
-app.all('*', (req, res) => {
+app.delete('/todos/:id', async (req, res) => {
+	await db
+		.update(todos)
+		.set({ status: 'deleted' })
+		.where(eq(todos.id, req.params.id));
+
+	res.status(201).json();
+});
+
+app.use((req, res) => {
 	res.status(404).json({
 		error: {
 			message: `Path ${req.path} not found or unsuported method ${req.method}`,

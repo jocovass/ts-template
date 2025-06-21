@@ -8,7 +8,6 @@ export interface ApiMeta {
 }
 
 export interface ErrorResponse {
-	data: never;
 	error: {
 		fields?: { error: string[]; field: string }[];
 		message?: string;
@@ -20,7 +19,6 @@ export type Response = ErrorResponse | SuccessResponse;
 
 export interface SuccessResponse {
 	data: unknown;
-	error: never;
 	meta?: ApiMeta;
 	status: 'success';
 }
