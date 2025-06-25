@@ -16,10 +16,13 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres GRANT SELECT, INSERT, UPDATE, DELETE,
 
 -- User for the application
 -- NOTE: the password will be updated when the DB is initialized
-CREATE USER app_user WITH LOGIN PASSWORD 'root' BYPASSRLS;
+CREATE USER app_user WITH LOGIN PASSWORD 'postgres' BYPASSRLS;
 COMMENT ON ROLE app_user IS 'Application user.';
 
 GRANT app_rw TO app_user;
-GRANT CREATE ON DATABASE todo TO app_user;
+GRANT CREATE ON DATABASE tododb TO app_user;
+
+-- Grant postgres ability to SET ROLE (for RDS)
+GRANT app_user TO postgres;
 
 COMMIT;

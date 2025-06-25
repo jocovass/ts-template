@@ -1,20 +1,33 @@
 import cors from 'cors';
 import { count, desc, eq, ne } from 'drizzle-orm';
 import express from 'express';
+import helmet from 'helmet';
+import morgan from 'morgan';
 import { z } from 'zod';
 
-import { db } from './models/database';
-import { todos } from './models/schemas';
-import { type ErrorResponse } from './utils/api/types';
-import { init } from './utils/initEnv';
+import { db } from './models/database.js';
+import { todos } from './models/schemas.js';
+import { type ErrorResponse } from './utils/api/types.js';
+import { init } from './utils/initEnv.js';
 
 init();
 
 const app = express();
 
+if (process.env.NODE_ENV === 'development') {
+	app.use(morgan('dev'));
+}
+
+app.use(helmet());
+
 app.disable('x-powered-by');
 
-app.use(cors());
+app.use(
+	cors({
+		credentials: true,
+		origin: [process.env.FRONTEND_URL],
+	}),
+);
 
 app.use(
 	express.json({
@@ -50,9 +63,11 @@ function formatApiError(error: z.ZodError) {
 		let path: string;
 		let message = value.message;
 		if (Array.isArray(value.path)) {
-			path = value.path[0]?.toString();
+			const firstPath = value.path[0] || '';
+			path = firstPath.toString();
+
 			if (value.path.length >= 2) {
-				message = `${message} (at index value.path[i])`;
+				message = `${message} (at index ${value.path[1]?.toString()})`;
 			}
 		} else {
 			path = value.path;
@@ -112,6 +127,14 @@ app.get('/todos', async (req, res) => {
 		.select({ count: count() })
 		.from(todos)
 		.where(ne(todos.status, 'deleted'));
+
+	res.cookie('TEST', 'TEST-value', {
+		httpOnly: true,
+		path: '/',
+		sameSite: 'lax',
+		secure: true,
+	});
+
 	res.status(200).json({
 		data,
 		meta: getPaginationMeta({

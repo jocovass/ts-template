@@ -53,7 +53,9 @@ function App() {
     async function fetchTodos() {
       setLoading(true);
       try {
-        const response = await fetch(`${API_URL}/todos`);
+        const response = await fetch(`${API_URL}/todos`, {
+          credentials: "include",
+        });
         const result: ApiResponse<Todo[]> = await response.json();
         if (result.status === "success") {
           setTodos(result.data);
@@ -94,6 +96,7 @@ function App() {
             try {
               const response = await fetch(`${API_URL}/todos`, {
                 method: "POST",
+                credentials: "include",
                 headers: {
                   "Content-Type": "application/json",
                 },
@@ -160,6 +163,7 @@ function App() {
             }}
             onClick={async () => {
               const response = await fetch(`${API_URL}/todos/${todo.id}`, {
+                credentials: "include",
                 method: "PATCH",
                 headers: {
                   "Content-Type": "application/json",
@@ -213,6 +217,7 @@ function App() {
               onClick={async (event) => {
                 event.stopPropagation();
                 const response = await fetch(`${API_URL}/todos/${todo.id}`, {
+                  credentials: "include",
                   method: "DELETE",
                 });
                 if (response.ok) {

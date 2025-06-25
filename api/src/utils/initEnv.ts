@@ -11,6 +11,7 @@ const schema = z.object({
 	DB_URL: z.string(),
 	DB_USER: z.string(),
 	ENV: z.enum(['production', 'development', 'test'] as const),
+	FRONTEND_URL: z.string(),
 	NODE_ENV: z.enum(['production', 'development', 'test'] as const),
 });
 
