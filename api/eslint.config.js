@@ -13,6 +13,7 @@ export default tseslint.config(
 			'**/database/**',
 			'**/src/models/drizzle/**',
 			'**/*.js',
+			'ecosystem.config.cjs',
 		],
 	},
 	eslint.configs.recommended,
